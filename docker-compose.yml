@@ -4,7 +4,7 @@ services:
   app:
     container_name: ${PROJ_LOWER_NAME}_${WEB_APP_LOWER_NAME}
     image: ${PROJ_LOWER_NAME}/${WEB_APP_LOWER_NAME}
-    # env_file: ./.env
+    env_file: ./.env
     ports:
       - ${WEB_APP_PORT}:8000
     depends_on:

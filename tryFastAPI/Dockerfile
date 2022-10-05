@@ -13,10 +13,10 @@ RUN apt update && \
 RUN python -m pip install --upgrade pip
 
 ENV app app
-RUN mkdir /$app
+RUN mkdir -p /$app/pkg
 WORKDIR /$app
-ADD . /$app
+ADD . /$app/pkg
 
-RUN pip install -r requirements.txt
+RUN pip install -r pkg/requirements.txt
 
-CMD uvicorn main:app --host 0.0.0.0 --port 8000
+CMD uvicorn pkg.main:app --host 0.0.0.0 --port 8000

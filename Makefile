@@ -9,17 +9,17 @@ docker-build:
 	docker build -f $(WEB_APP_DIR)/Dockerfile -t $(WEB_APP_IMG_NAME) ./$(WEB_APP_DIR)
 	docker image prune --force
 
-docker-cleanup:
-	docker rmi $(WEB_APP_IMG_NAME)
-	docker image prune --force
-
 docker-up:
 	docker-compose up -d  
 
 docker-down:
 	docker-compose down
 
-docker-dbu: down build up
+docker-dbu: docker-down docker-build docker-up
+
+docker-cleanup:
+	docker rmi $(WEB_APP_IMG_NAME)
+	docker image prune --force
 
 docker-logs:
 	docker-compose logs -f
