@@ -2,15 +2,15 @@ version: "3"
 
 services:
   app:
-    container_name: tryfapi_web
-    image: tryfapi/web
+    container_name: ${PROJ_LOWER_NAME}_${WEB_APP_LOWER_NAME}
+    image: ${PROJ_LOWER_NAME}/${WEB_APP_LOWER_NAME}
     # env_file: ./.env
     ports:
-      - ${APP_PORT}:8000
+      - ${WEB_APP_PORT}:8000
     depends_on:
       - db
   db:
-    container_name: tryfapi_postgres
+    container_name: ${PROJ_LOWER_NAME}_postgres
     image: postgres:14
     # restart: "no"
     env_file: ./.env
