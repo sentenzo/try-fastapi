@@ -26,4 +26,4 @@ docker-logs:
 
 run:
 	docker-compose up -d db
-	cd $(WEB_APP_DIR) && poetry run uvicorn --reload --host 0.0.0.0 --port 8000 main:app
+	poetry run uvicorn --reload --port 8000 $(PROJ_NAME).main:app
