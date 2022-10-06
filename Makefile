@@ -10,10 +10,10 @@ docker-build:
 	docker image prune --force
 
 docker-up:
-	docker-compose up -d  
+	docker-compose up app -d  
 
 docker-down:
-	docker-compose down
+	docker-compose down --remove-orphans
 
 docker-dbu: docker-down docker-build docker-up
 
@@ -27,3 +27,7 @@ docker-logs:
 run:
 	docker-compose up -d db
 	poetry run uvicorn --reload --port 8000 $(PROJ_NAME).main:app
+
+test:
+	docker-compose up -d db
+	poetry run pytest
