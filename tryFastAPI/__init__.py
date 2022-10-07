@@ -1,3 +1,6 @@
-import dotenv
+try:
+    import dotenv
 
-dotenv.load_dotenv()
+    dotenv.load_dotenv()
+except ImportError:
+    pass

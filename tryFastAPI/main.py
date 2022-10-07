@@ -1,12 +1,24 @@
+from time import sleep
 from fastapi import Depends, FastAPI, HTTPException
 from fastapi.responses import HTMLResponse
 from sqlalchemy.orm import Session
+import sqlalchemy.exc as sql_exc
 
 from . import crud, models, schemas
 from .database import SessionLocal, engine
 
 
-models.Base.metadata.create_all(bind=engine)
+# for _ in range(20):  # 20*0.2 == 4 sec
+#     try:
+#         models.Base.metadata.create_all(bind=engine)
+#         break
+#     except sql_exc.OperationalError:
+#         # when the app container launches up faster than db
+#         print(" >>> so slow")
+#         sleep(0.2)
+
+#         continue
+
 
 app = FastAPI()
 
