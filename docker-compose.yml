@@ -2,19 +2,26 @@ version: "3"
 
 services:
   app:
-    container_name: ${PROJ_LOWER_NAME}_${WEB_APP_LOWER_NAME}
+    container_name: ${DOCKER_APP_NAME}
     image: ${PROJ_LOWER_NAME}/${WEB_APP_LOWER_NAME}
     env_file: ./.env
+    environment:
+      DB_PORT: ${DOCKER_DB_PORT}
+      DB_HOST: ${DOCKER_DB_NAME}
     ports:
       - ${WEB_APP_PORT}:8000
     depends_on:
       - db
   db:
-    container_name: ${PROJ_LOWER_NAME}_postgres
+    container_name: ${DOCKER_DB_NAME}
     image: postgres:14
     # restart: "no"
     env_file: ./.env
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_DBNAME}
     ports:
-      - ${POSTGRES_PORT}:5432
+      - ${DB_PORT}:5432
     volumes:
       - ./.data:/var/lib/postgresql/data
