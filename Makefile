@@ -14,9 +14,9 @@ docker-build:
 	docker image prune --force
 
 docker-up:
-	docker-compose up db -d 
+	docker-compose up -d db 
 	$(ALEMBIC_MIGRATE)
-	docker-compose up app -d 
+	docker-compose up -d app
 
 docker-down:
 	docker-compose down --remove-orphans
@@ -31,7 +31,7 @@ docker-logs:
 	docker-compose logs -f
 
 run:
-	docker-compose up db -d
+	docker-compose up -d db
 	$(ALEMBIC_MIGRATE)
 	poetry run uvicorn --reload --port 8000 $(PROJ_NAME).main:app
 
