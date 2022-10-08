@@ -2,10 +2,8 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
-from .db.db_url_builder import (
-    DbUrlEnvBuilder,
-    DbUrlParams,
-)
+
+from .db_url_builder import DbUrlEnvBuilder, DbUrlParams
 
 env_mapping = {
     DbUrlParams.PROTOCOL: "DB_PROTOCOL",
@@ -18,9 +16,9 @@ env_mapping = {
 
 DbUriBuilderLocal = DbUrlEnvBuilder.get_local_type(env_mapping)
 ldub: DbUrlEnvBuilder = DbUriBuilderLocal()
-SQLALCHEMY_DATABASE_URL = ldub.from_env().to_str()
+SQL_DATABASE_URL = ldub.from_env().to_str()
 
-engine = create_engine(SQLALCHEMY_DATABASE_URL)
+engine = create_engine(SQL_DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 Base = declarative_base()

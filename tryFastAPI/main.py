@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 import sqlalchemy.exc as sql_exc
 
 from . import crud, models, schemas
-from .database import SessionLocal, engine
+from .db.database import SessionLocal, engine
 
 
 # for _ in range(20):  # 20*0.2 == 4 sec

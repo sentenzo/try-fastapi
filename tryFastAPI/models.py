@@ -5,7 +5,7 @@ from sqlalchemy import Boolean, Column, ForeignKey, Integer, String
 # from sqlalchemy.orm import relationship
 import sqlalchemy.dialects.postgresql as pg
 
-from .database import Base
+from .db.database import Base
 
 
 class Html(Base):

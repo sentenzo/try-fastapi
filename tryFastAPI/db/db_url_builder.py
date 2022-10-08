@@ -1,3 +1,29 @@
+"""
+A couple of tools for building a database URL (dialect[+driver]://user:password@host:port/dbname).
+
+Examples of such URLs:
+    postgresql://scott:tiger@localhost/test
+    mysql+pymysql://scott:tiger@localhost/foo
+    oracle://scott:tiger@127.0.0.1:1521/sidname
+
+Application examples:
+    env_mapping = {
+        DbUrlParams.PROTOCOL: "DB_PROTOCOL",
+        DbUrlParams.USER: "DB_USER",
+        DbUrlParams.PASSWPRD: "DB_PASSWORD",
+        DbUrlParams.HOST: "DB_HOST",
+        DbUrlParams.PORT: "DB_PORT",
+    #    DbUrlParams.DBNAME: "DB_DBNAME",
+    }
+
+    DbUriBuilderLocal = DbUrlEnvBuilder.get_local_type(env_mapping)
+    ldub: DbUrlEnvBuilder = DbUriBuilderLocal()
+    ldub.from_env()
+    ldub.host("192.168.0.14").port(6776)
+    ldub.dbname("my_db_name")
+    SQL_DATABASE_URL = ldub.to_str()
+"""
+
 from __future__ import annotations
 from enum import Enum
 import os
@@ -95,7 +121,7 @@ class DbUrlEnvBuilder(DbUrlBuilder):
         return {}
 
     @staticmethod
-    def get_local_type(env_mapping: dict[DbUrlParams, str]) -> type:
+    def get_local_type(env_mapping: dict[DbUrlParams, str]) -> type[DbUrlEnvBuilder]:
         class DbUrlEnvBuilderLocal(DbUrlEnvBuilder):
             @staticmethod
             def _default_env_mapping_gen() -> dict[DbUrlParams, str]:
