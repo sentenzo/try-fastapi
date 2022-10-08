@@ -90,6 +90,19 @@ class DbUrlBuilder:
 
 
 class DbUrlEnvBuilder(DbUrlBuilder):
+    @staticmethod
+    def _default_env_mapping_gen() -> dict[DbUrlParams, str]:
+        return {}
+
+    @staticmethod
+    def get_local_type(env_mapping: dict[DbUrlParams, str]) -> type:
+        class DbUrlEnvBuilderLocal(DbUrlEnvBuilder):
+            @staticmethod
+            def _default_env_mapping_gen() -> dict[DbUrlParams, str]:
+                return env_mapping.copy()
+
+        return DbUrlEnvBuilderLocal
+
     def __init__(
         self,
         protocol=None,
@@ -102,7 +115,7 @@ class DbUrlEnvBuilder(DbUrlBuilder):
         env_mapping: dict[DbUrlParams, str] = None,
     ):
         super().__init__(protocol, user, password, host, port, dbname)
-        self._env_mapping = env_mapping or {}
+        self._env_mapping = env_mapping or self.__class__._default_env_mapping_gen()
         self._env_param_calls: dict[DbUrlParams, Callable] = {
             DbUrlParams.PROTOCOL: self.env_protocol,
             DbUrlParams.USER: self.env_user,
@@ -148,15 +161,3 @@ class DbUrlEnvBuilder(DbUrlBuilder):
             except ValueError:
                 continue
         return self
-
-
-class db_url_env_builder_factory:
-    def __init__(self, env_mapping: dict[DbUrlParams, str], **kwds: Any) -> None:
-        self._env_mapping = env_mapping
-        self._kwargs = kwds
-
-    def __call__(self, *args: Any, **kwds: Any) -> DbUrlEnvBuilder:
-        if len(args) == len(kwds) == 0:
-            return DbUrlEnvBuilder(env_mapping=self._env_mapping, **self._kwargs)
-        else:
-            raise ValueError

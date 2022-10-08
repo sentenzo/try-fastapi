@@ -3,7 +3,6 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
 from .db.db_url_builder import (
-    db_url_env_builder_factory,
     DbUrlEnvBuilder,
     DbUrlParams,
 )
@@ -17,8 +16,8 @@ env_mapping = {
     DbUrlParams.DBNAME: "DB_DBNAME",
 }
 
-LocalDbUriBuilder = db_url_env_builder_factory(env_mapping=env_mapping)
-ldub: DbUrlEnvBuilder = LocalDbUriBuilder()
+DbUriBuilderLocal = DbUrlEnvBuilder.get_local_type(env_mapping)
+ldub: DbUrlEnvBuilder = DbUriBuilderLocal()
 SQLALCHEMY_DATABASE_URL = ldub.from_env().to_str()
 
 engine = create_engine(SQLALCHEMY_DATABASE_URL)

@@ -9,9 +9,9 @@ from alembic import context
 # access to the values within the .ini file in use.
 config = context.config
 
-from tryFastAPI.database import LocalDbUriBuilder
+from tryFastAPI.database import DbUriBuilderLocal
 
-builder = LocalDbUriBuilder()
+builder = DbUriBuilderLocal()
 url = builder.from_env().to_str()
 config.set_main_option("sqlalchemy.url", url)
 
