@@ -1,2 +1,2 @@
-def test():
+def test(migrated_db):
     pass
