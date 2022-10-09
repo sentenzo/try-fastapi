@@ -4,11 +4,12 @@ from fastapi.responses import HTMLResponse
 from sqlalchemy.orm import Session
 
 from . import crud, schemas
-from .db.database import SessionLocal, engine
+from .db.database import make_session_local_type
 
 
 def make_app() -> FastAPI:
     app_ = FastAPI()
+    SessionLocal = make_session_local_type()
     # Dependency
     def get_db():
         db = SessionLocal()

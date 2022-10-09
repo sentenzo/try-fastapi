@@ -1,6 +1,7 @@
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy.engine import Engine
 
 
 from .db_url_builder import DbUrlEnvBuilder, DbUrlParams
@@ -13,12 +14,25 @@ env_mapping = {
     DbUrlParams.PORT: "DB_PORT",
     DbUrlParams.DBNAME: "DB_DBNAME",
 }
-
 DbUriBuilderLocal = DbUrlEnvBuilder.get_local_type(env_mapping)
-ldub: DbUrlEnvBuilder = DbUriBuilderLocal()
-SQL_DATABASE_URL = ldub.from_env().to_str()
 
-engine = create_engine(SQL_DATABASE_URL)
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+def make_engine() -> Engine:
+    sql_db_url = DbUriBuilderLocal().from_env().to_str()
+    engine = create_engine(sql_db_url)
+    return engine
+
+
+def make_session_local_type(engine: Engine = None):
+    engine = engine or make_engine()
+    return sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+
+#########
 
 Base = declarative_base()
+
+# SQL_DATABASE_URL = DbUriBuilderLocal().from_env().to_str()
+
+# engine = make_engine()
+# SessionLocal = make_session_local_type(engine)
