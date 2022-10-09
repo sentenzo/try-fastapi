@@ -33,7 +33,7 @@ docker-logs:
 run:
 	docker-compose up -d db
 	$(ALEMBIC_MIGRATE)
-	poetry run uvicorn --reload --port 8000 $(PROJ_NAME).main:app
+	poetry run uvicorn --reload --port 8000 $(PROJ_NAME):app
 
 test:
 	docker-compose up -d db

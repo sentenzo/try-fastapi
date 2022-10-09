@@ -13,10 +13,11 @@ RUN apt update && \
 RUN python -m pip install --upgrade pip
 
 ENV app app
-RUN mkdir -p /$app/pkg
+ENV pkg tryFastAPI
+RUN mkdir -p /$app/$pkg
 WORKDIR /$app
-ADD . /$app/pkg
+ADD . /$app/$pkg
 
-RUN pip install -r pkg/requirements.txt
+RUN pip install -r $pkg/requirements.txt
 
-CMD uvicorn pkg.main:app --host 0.0.0.0 --port 8000
+CMD uvicorn $pkg:app --host 0.0.0.0 --port 8000
