@@ -4,18 +4,18 @@ from uuid import uuid4
 import pytest
 import dotenv
 from sqlalchemy_utils import create_database, database_exists, drop_database
-from alembic.command import upgrade as alembic_upgrade
+from alembic.command import upgrade as alembic_upgrade, downgrade as alembic_downgrade
 from alembic.config import Config as AlembicConfig
 from fastapi.testclient import TestClient
 
-from tryFastAPI.db.database import DbUriBuilderLocal
+from tryFastAPI.db.connection.session import DbUriBuilderLocal
 from tryFastAPI import make_app
 
 
 dotenv.load_dotenv()
 
 
-@pytest.fixture
+@pytest.fixture(scope="session")
 def env():
     prev_db_name = None
     try:
@@ -27,7 +27,7 @@ def env():
         os.environ["DB_DBNAME"] = prev_db_name
 
 
-@pytest.fixture
+@pytest.fixture(scope="session")
 def db(env) -> str:
     tmp_db_url = None
     try:
@@ -37,18 +37,20 @@ def db(env) -> str:
             yield tmp_db_url
     finally:
         if tmp_db_url and database_exists(tmp_db_url):
-            # drop_database(tmp_db_url)
+            drop_database(tmp_db_url)
             ...
 
 
-@pytest.fixture
+@pytest.fixture(scope="class")
 def migrated_db(db):
     alembic_config = AlembicConfig(file_="alembic.ini")
     alembic_config.set_main_option("sqlalchemy.url", db)
     alembic_upgrade(alembic_config, "head")
+    # yield True
+    # alembic_downgrade(alembic_config, "base")
 
 
 @pytest.fixture
-def client(migrated_db) -> TestClient:
+def client() -> TestClient:
     app = make_app()
     return TestClient(app)
