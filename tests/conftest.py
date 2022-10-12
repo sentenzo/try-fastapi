@@ -46,8 +46,8 @@ def migrated_db(db):
     alembic_config = AlembicConfig(file_="alembic.ini")
     alembic_config.set_main_option("sqlalchemy.url", db)
     alembic_upgrade(alembic_config, "head")
-    # yield True
-    # alembic_downgrade(alembic_config, "base")
+    yield
+    alembic_downgrade(alembic_config, "base")
 
 
 @pytest.fixture
