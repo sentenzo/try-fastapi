@@ -5,10 +5,10 @@ from sqlalchemy import Boolean, Column, ForeignKey, Integer, String
 # from sqlalchemy.orm import relationship
 import sqlalchemy.dialects.postgresql as pg
 
-from ..database import Base
+from tryFastAPI.db import DeclarativeBase
 
 
-class Html(Base):
+class Html(DeclarativeBase):
     __tablename__ = "tblHtml"
 
     # id = Column(pg.UUID(as_uuid=True), primary_key=True, index=True, default=uuid.uuid4)

@@ -1,13 +1,5 @@
 from pydantic import BaseModel
 
 
-class PingBase(BaseModel):
+class PingResponce(BaseModel):
     message: str
-
-
-class PingApp(PingBase):
-    pass
-
-
-class PingDb(PingBase):
-    pass
