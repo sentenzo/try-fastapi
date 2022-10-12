@@ -1,4 +1,4 @@
-from .ping import PingResponce
-from .html import HtmlGetRequest, HtmlInRequest, HtmlOutResponse
+from .simple import SimpleResponce
+from .html import Html
 
-__all__ = [PingResponce, HtmlGetRequest, HtmlInRequest, HtmlOutResponse]
+__all__ = [SimpleResponce, Html]
