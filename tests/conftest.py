@@ -31,7 +31,9 @@ def env():
 def db(env) -> str:
     tmp_db_url = None
     try:
-        tmp_db_url = DbUriBuilderLocal().from_env().to_str()
+        url_builder = DbUriBuilderLocal().from_env()
+        url_builder.driver(None)
+        tmp_db_url = url_builder.to_str()
         if not database_exists(tmp_db_url):
             create_database(tmp_db_url)
             yield tmp_db_url

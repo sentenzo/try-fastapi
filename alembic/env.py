@@ -12,7 +12,9 @@ config = context.config
 from tryFastAPI.db.connection.session import DbUriBuilderLocal
 
 builder = DbUriBuilderLocal()
-url = builder.from_env().to_str()
+builder.from_env()
+builder.driver(None)
+url = builder.to_str()
 config.set_main_option("sqlalchemy.url", url)
 
 # Interpret the config file for Python logging.

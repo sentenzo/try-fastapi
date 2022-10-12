@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from sqlalchemy import create_engine
+from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.engine import Engine
 
@@ -8,6 +8,7 @@ from ..utils.db_url_builder import DbUrlEnvBuilder, DbUrlParams
 
 ENV_MAPPING = {
     DbUrlParams.PROTOCOL: "DB_PROTOCOL",
+    DbUrlParams.DRIVER: "DB_DRIVER",
     DbUrlParams.USER: "DB_USER",
     DbUrlParams.PASSWPRD: "DB_PASSWORD",
     DbUrlParams.HOST: "DB_HOST",
@@ -31,16 +32,18 @@ class SessionManager:
 
     def refresh(self):
         sql_db_url = DbUriBuilderLocal().from_env().to_str()
-        self.engine = create_engine(sql_db_url)
+        self.engine = create_async_engine(sql_db_url)
 
     @property
     def SessionLocal(self):
-        return sessionmaker(autocommit=False, autoflush=False, bind=self.engine)
+        return sessionmaker(
+            bind=self.engine, class_=AsyncSession, expire_on_commit=False
+        )
 
 
-def get_session_dependency():
+async def get_session_dependency() -> AsyncSession:
     SessionLocal = SessionManager().SessionLocal
-    with SessionLocal() as session:
+    async with SessionLocal() as session:
         yield session
 
 

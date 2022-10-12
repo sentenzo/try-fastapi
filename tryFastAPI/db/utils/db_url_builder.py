@@ -35,6 +35,7 @@ logger = logging.getLogger(__name__)
 
 class DbUrlParams(Enum):
     PROTOCOL = "protocol"
+    DRIVER = "driver"
     USER = "user"
     PASSWPRD = "password"
     HOST = "host"
@@ -46,6 +47,7 @@ class DbUrlBuilder:
     def __init__(
         self,
         protocol=None,
+        driver=None,
         user=None,
         password=None,
         host=None,
@@ -53,6 +55,7 @@ class DbUrlBuilder:
         dbname=None,
     ):
         self._protocol = protocol
+        self._driver = driver
         self._user = user
         self._password = password
         self._host = host
@@ -61,6 +64,10 @@ class DbUrlBuilder:
 
     def protocol(self, protocol):
         self._protocol = protocol
+        return self
+
+    def driver(self, driver):
+        self._driver = driver
         return self
 
     def user(self, user):
@@ -87,7 +94,10 @@ class DbUrlBuilder:
         # f"postgresql://{user}:{passwd}@{host}:{dbport}/{dbname}"
         if None in (self._protocol, self._user, self._host):
             raise ValueError()
-        db_conn_url = [self._protocol, "://", self._user]
+        db_conn_url = [self._protocol]
+        if self._driver:
+            db_conn_url.extend(["+", self._driver])
+        db_conn_url.extend(["://", self._user])
         if self._password:
             db_conn_url.extend([":", self._password])
         db_conn_url.extend(["@", self._host])
@@ -132,6 +142,7 @@ class DbUrlEnvBuilder(DbUrlBuilder):
     def __init__(
         self,
         protocol=None,
+        driver=None,
         user=None,
         password=None,
         host=None,
@@ -140,10 +151,11 @@ class DbUrlEnvBuilder(DbUrlBuilder):
         ###
         env_mapping: dict[DbUrlParams, str] = None,
     ):
-        super().__init__(protocol, user, password, host, port, dbname)
+        super().__init__(protocol, driver, user, password, host, port, dbname)
         self._env_mapping = env_mapping or self.__class__._default_env_mapping_gen()
         self._env_param_calls: dict[DbUrlParams, Callable] = {
             DbUrlParams.PROTOCOL: self.env_protocol,
+            DbUrlParams.DRIVER: self.env_driver,
             DbUrlParams.USER: self.env_user,
             DbUrlParams.PASSWPRD: self.env_password,
             DbUrlParams.HOST: self.env_host,
@@ -157,6 +169,9 @@ class DbUrlEnvBuilder(DbUrlBuilder):
 
     def env_protocol(self, env_var):
         return DbUrlEnvBuilder._env_warpper(super().protocol, env_var)
+
+    def env_driver(self, env_var):
+        return DbUrlEnvBuilder._env_warpper(super().driver, env_var)
 
     def env_user(self, env_var):
         return DbUrlEnvBuilder._env_warpper(super().user, env_var)

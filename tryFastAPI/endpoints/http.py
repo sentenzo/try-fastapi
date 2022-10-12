@@ -20,38 +20,38 @@ api_router = APIRouter(
 
 
 @api_router.get("/{key}/page", response_class=HTMLResponse)
-async def get_http_as_page(key: str, db: Session = Depends(get_session)) -> str:
-    html: Html = get_html(db, key=key)
+async def get_http_as_page(key: str, session: Session = Depends(get_session)) -> str:
+    html: Html = await get_html(session, key=key)
     return html.html
 
 
 @api_router.get("/{key}", response_model=HtmlSchema)
-async def get_http(key: str, db: Session = Depends(get_session)):
-    response = get_html(db, key=key)
+async def get_http(key: str, session: Session = Depends(get_session)):
+    response = await get_html(session, key=key)
     if not response:
         raise HTTPException(status_code=404, detail="No such key")
     return response
 
 
 @api_router.put("", response_model=HtmlSchema)
-async def put_http(html_put: HtmlSchema, db: Session = Depends(get_session)):
-    response = put_html(db, html_put)
+async def put_http(html_put: HtmlSchema, session: Session = Depends(get_session)):
+    response = await put_html(session, html_put)
     if not response:
         raise HTTPException(status_code=409, detail="Key already registered")
     return response
 
 
 @api_router.post("", response_model=HtmlSchema)
-async def post_http(html_post: HtmlSchema, db: Session = Depends(get_session)):
-    response = post_html(db, html_post)
+async def post_http(html_post: HtmlSchema, session: Session = Depends(get_session)):
+    response = await post_html(session, html_post)
     if not response:
         raise HTTPException(status_code=404, detail="No such key")
     return response
 
 
 @api_router.delete("/{key}", response_model=SimpleResponce)
-async def delete_http(key: str, db: Session = Depends(get_session)):
-    response = delete_html(db, key)
+async def delete_http(key: str, session: Session = Depends(get_session)):
+    response = await delete_html(session, key)
     if not response:
         raise HTTPException(status_code=404, detail="No such key")
     return SimpleResponce(message="Successfully deleted")

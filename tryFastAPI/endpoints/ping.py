@@ -20,7 +20,7 @@ async def ping_app():
 
 @api_router.get("/db", response_model=SimpleResponce, status_code=status.HTTP_200_OK)
 async def ping_db(db: Session = Depends(get_session)):
-    result = db.scalar(select(text("1")))
+    result = await db.scalar(select(text("1")))
     if result:
         return SimpleResponce(message="Database responds")
     raise HTTPException(
