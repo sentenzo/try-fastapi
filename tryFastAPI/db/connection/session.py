@@ -21,7 +21,7 @@ DbUriBuilderLocal = DbUrlEnvBuilder.get_local_type(ENV_MAPPING)
 
 class SessionManager:
     def __init__(self) -> None:
-        self.engin: Engine = None
+        self.engine: Engine = None
         self.refresh()
 
     def __new__(cls: type[SessionManager]) -> SessionManager:

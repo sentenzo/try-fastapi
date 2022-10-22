@@ -4,12 +4,15 @@ from uuid import uuid4
 import pytest
 import dotenv
 from sqlalchemy_utils import create_database, database_exists, drop_database
+from sqlalchemy.ext.asyncio import AsyncSession
 from alembic.command import upgrade as alembic_upgrade, downgrade as alembic_downgrade
 from alembic.config import Config as AlembicConfig
 from fastapi.testclient import TestClient
 
+
 from tryFastAPI.db.connection.session import DbUriBuilderLocal
 from tryFastAPI import make_app
+from tryFastAPI.db.connection.session import get_session_dependency
 
 
 dotenv.load_dotenv()
@@ -32,8 +35,9 @@ def db(env) -> str:
     tmp_db_url = None
     try:
         url_builder = DbUriBuilderLocal().from_env()
-        url_builder.driver(None)
+        # url_builder.driver(None)
         tmp_db_url = url_builder.to_str()
+        # assert tmp_db_url == ""
         if not database_exists(tmp_db_url):
             create_database(tmp_db_url)
             yield tmp_db_url
@@ -50,6 +54,12 @@ def migrated_db(db):
     alembic_upgrade(alembic_config, "head")
     yield
     alembic_downgrade(alembic_config, "base")
+
+
+@pytest.fixture
+async def acync_session(env, migrated_db):
+    async for session in get_session_dependency():
+        yield session
 
 
 @pytest.fixture
