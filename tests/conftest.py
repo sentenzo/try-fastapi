@@ -35,15 +35,14 @@ def db(env) -> str:
     tmp_db_url = None
     try:
         url_builder = DbUriBuilderLocal().from_env()
-        # url_builder.driver(None)
         tmp_db_url = url_builder.to_str()
-        # assert tmp_db_url == ""
-        if not database_exists(tmp_db_url):
-            create_database(tmp_db_url)
+        tmp_db_url_sync = url_builder.driver(None).to_str()
+        if not database_exists(tmp_db_url_sync):
+            create_database(tmp_db_url_sync)
             yield tmp_db_url
     finally:
-        if tmp_db_url and database_exists(tmp_db_url):
-            drop_database(tmp_db_url)
+        if tmp_db_url_sync and database_exists(tmp_db_url_sync):
+            drop_database(tmp_db_url_sync)
             ...
 
 
