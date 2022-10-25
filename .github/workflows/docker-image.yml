@@ -22,5 +22,6 @@ jobs:
       run: pip install poetry
     - name: Install python libs
       run: poetry install
+    - run: cp .example.env .env
     - run: docker-compose up -d db
     - run: poetry run pytest
