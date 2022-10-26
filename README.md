@@ -56,3 +56,5 @@ to install all the Python packages required.
 6. Finally, launch the application. You have two options:
     - `make run` if you want it to work from your local machine
     - `make docker-up` if you prefer it running in docker container
+
+7. To check if everything works, you may open `http://{your-app-adress}/docs`, and you should be able to see something similar to the picture on the top of this page.
