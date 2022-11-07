@@ -1,24 +1,37 @@
 from datetime import datetime
+from uuid import UUID
 
-from pydantic import BaseModel  # , Field
-
-
-# from random import randrange
+from pydantic import BaseModel, EmailStr
 
 
-class PostBase(BaseModel):
-    # id: int = Field(default_factory=lambda: randrange(1, 10**10))
+class Post(BaseModel):
     title: str
     content: str
     published: bool = True
 
 
-class PostCreate(PostBase):
+class PostWithID(BaseModel):
+    id: UUID
+    created_at: datetime
+
+
+class PostCreate(Post):
     pass
 
 
-class PostResponse(PostBase):
-    created_at: datetime
+class PostResponse(Post, PostWithID):
+    class Config:
+        orm_mode = True
+
+
+class UserCreate(BaseModel):
+    email: EmailStr
+    password: str
+
+
+class UserResponse(BaseModel):
+    id: UUID
+    email: EmailStr
 
     class Config:
         orm_mode = True
