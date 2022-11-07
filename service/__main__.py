@@ -2,12 +2,15 @@ from uuid import UUID
 
 import uvicorn
 from fastapi import Depends, FastAPI, HTTPException, status
+from passlib.context import CryptContext
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Query, Session
 
 from . import models, schemas
 from .database import engine, get_db
 
+
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 models.Base.metadata.create_all(bind=engine)
 
@@ -111,6 +114,8 @@ def create_user(
     new_user: schemas.UserCreate,
     db: Session = Depends(get_db),
 ):
+
+    new_user.password = pwd_context.hash(new_user.password)
     new_db_user = models.User(**new_user.dict())
     db.add(new_db_user)
     try:
@@ -133,6 +138,24 @@ def get_all_users(
     db: Session = Depends(get_db),
 ):
     return db.query(models.User).all()
+
+
+@app.get(
+    "/user/{user_id}",
+    status_code=status.HTTP_200_OK,
+    response_model=schemas.UserResponse,
+)
+def get_user(
+    user_id: UUID,
+    db: Session = Depends(get_db),
+):
+    user = db.query(models.User).get(user_id)
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"No user with id={user_id}",
+        )
+    return user
 
 
 if __name__ == "__main__":
