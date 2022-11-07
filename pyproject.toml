@@ -8,11 +8,14 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = "^3.10"
 fastapi = {extras = ["all"], version = "^0.86.0"}
+psycopg2-binary = "^2.9.5"
+SQLAlchemy = "^1.4.43"
 
 [tool.poetry.group.dev.dependencies]
 black = "^22.8.0"
 isort = "^5.10.1"
 pylint = "^2.15.5"
+python-dotenv = "^0.21.0"
 
 [build-system]
 requires = ["poetry-core"]
@@ -25,18 +28,18 @@ asyncio_mode = "auto"
 [tool.isort]
 lines_after_imports = 2
 multi_line_output = 3
-line_length = 120
+line_length = 80
 include_trailing_comma = true
 
 [tool.black]
-line-length = 120
+line-length = 80
 target-version = ['py310']
 
 [tool.pylint.master]
 extension-pkg-allow-list = ["pydantic"]
 
 [tool.pylint.format]
-max-line-length = 120
+max-line-length = 80
 
 [tool.pylint.basic]
 good-names = ["db"]
