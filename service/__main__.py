@@ -1,10 +1,11 @@
 import uvicorn
 
 from . import app
-from .routers import healthcheck, post, user
+from .routers import auth, healthcheck, post, user
 
 
 app.include_router(healthcheck.router)
+app.include_router(auth.router)
 app.include_router(user.router)
 app.include_router(post.router)
 
