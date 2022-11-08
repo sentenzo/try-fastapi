@@ -3,7 +3,7 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Query, Session
 
-from .. import models, schemas
+from .. import models, oauth2, schemas
 from ..database import get_db
 
 
@@ -14,7 +14,11 @@ router = APIRouter(prefix="/post", tags=["Post"])
     "/all",
     response_model=list[schemas.PostResponse],
 )
-async def get_posts(db: Session = Depends(get_db)):
+async def get_posts(
+    db: Session = Depends(get_db),
+    user=Depends(oauth2.get_current_user),
+):
+    print(user)
     posts = db.query(models.Post).all()
     return posts
 
@@ -23,7 +27,11 @@ async def get_posts(db: Session = Depends(get_db)):
     "/{post_uuid}",
     response_model=schemas.PostResponse,
 )
-async def get_post(post_uuid: UUID, db: Session = Depends(get_db)):
+async def get_post(
+    post_uuid: UUID,
+    db: Session = Depends(get_db),
+    user=Depends(oauth2.get_current_user),
+):
     post = db.query(models.Post).get(post_uuid)
     if not post:
         raise HTTPException(
@@ -39,7 +47,9 @@ async def get_post(post_uuid: UUID, db: Session = Depends(get_db)):
     response_model=schemas.PostResponse,
 )
 async def create_post(
-    new_post: schemas.PostCreate, db: Session = Depends(get_db)
+    new_post: schemas.PostCreate,
+    db: Session = Depends(get_db),
+    user=Depends(oauth2.get_current_user),
 ):
     new_post_args = new_post.dict()
     new_db_post = models.Post(**new_post_args)
@@ -51,7 +61,11 @@ async def create_post(
 
 
 @router.delete("/{post_uuid}", status_code=status.HTTP_204_NO_CONTENT)
-async def delete_post(post_uuid: UUID, db: Session = Depends(get_db)):
+async def delete_post(
+    post_uuid: UUID,
+    db: Session = Depends(get_db),
+    user=Depends(oauth2.get_current_user),
+):
     to_be_deleted = db.query(models.Post).get(post_uuid)
 
     if not to_be_deleted:
@@ -71,6 +85,7 @@ async def update_post(
     post_uuid: UUID,
     updated_post: schemas.PostCreate,
     db: Session = Depends(get_db),
+    user=Depends(oauth2.get_current_user),
 ):
     to_be_updated_query: Query = db.query(models.Post).filter(
         models.Post.id == post_uuid
