@@ -36,7 +36,6 @@ async def get_posts(
     posts_query = (
         posts_query.order_by(models.Post.created_at).limit(limit).offset(offset)
     )
-    print(posts_query)
     posts = posts_query.all()
     return posts
 

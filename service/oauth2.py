@@ -1,4 +1,3 @@
-import os
 from datetime import datetime, timedelta
 from uuid import UUID
 
@@ -8,19 +7,22 @@ from jose import JWTError, jwt
 from sqlalchemy.orm import Session
 
 from . import models, schemas
+from .config import get_config
 from .database import get_db
 
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth")
-
-SECRET_KEY = os.environ.get("JWK")
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24 * 365
+settings = get_config().jwt_settings
+SECRET_KEY = settings.key
+ALGORITHM = settings.algorithm
+ACCESS_TOKEN_LIFESPAN_MINUTES = settings.token_lifespan_minutes
 
 
 def create_access_token(data: dict):
     data_to_encode = data.copy()
-    expire = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    expire = datetime.utcnow() + timedelta(
+        minutes=ACCESS_TOKEN_LIFESPAN_MINUTES
+    )
     data_to_encode.update({"expire": expire.isoformat()})
 
     token = jwt.encode(data_to_encode, SECRET_KEY, algorithm=ALGORITHM)
