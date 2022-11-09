@@ -3,11 +3,16 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Query, Session
 
-from .. import models, oauth2, schemas
+from .. import exceptions, models, oauth2, schemas
 from ..database import get_db
 
 
 router = APIRouter(prefix="/post", tags=["Post"])
+
+
+class Exception404NoId(exceptions.Exception404NoId):
+    def __init__(self, uuid: UUID) -> None:
+        super().__init__("post", uuid)
 
 
 @router.get(
@@ -33,10 +38,7 @@ async def get_post(
 ):
     post = db.query(models.Post).get(post_uuid)
     if not post:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"No post with id={post_uuid}",
-        )
+        raise Exception404NoId(post_uuid)
     return post
 
 
@@ -51,8 +53,7 @@ async def create_post(
     user: models.User = Depends(oauth2.get_current_user),
 ):
     new_post_args = new_post.dict()
-    new_db_post = models.Post(**new_post_args)
-    new_db_post.owner_id = user.id
+    new_db_post = models.Post(owner_id=user.id, **new_post_args)
     db.add(new_db_post)
     db.commit()
     db.refresh(new_db_post)
@@ -66,12 +67,13 @@ async def delete_post(
     db: Session = Depends(get_db),
     user: models.User = Depends(oauth2.get_current_user),
 ):
-    to_be_deleted = db.query(models.Post).get(post_uuid)
+    to_be_deleted: models.Post = db.query(models.Post).get(post_uuid)
 
     if not to_be_deleted:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"No post with id={post_uuid}",
+        raise Exception404NoId(post_uuid)
+    if not to_be_deleted.owner_id == user.id:
+        raise exceptions.Exception403(
+            "It is only allowed to delete one's own posts"
         )
     db.delete(to_be_deleted)
     db.commit()
@@ -93,9 +95,10 @@ async def update_post(
     to_be_updated = to_be_updated_query.first()
 
     if not to_be_updated:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"No post with id={post_uuid}",
+        raise Exception404NoId(post_uuid)
+    if not to_be_updated.owner_id == user.id:
+        raise exceptions.Exception403(
+            "It is only allowed to update one's own posts"
         )
 
     argvals = updated_post.dict()
