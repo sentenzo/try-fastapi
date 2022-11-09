@@ -30,12 +30,13 @@ async def get_posts(
     posts_query = db.query(models.Post)
     if search:
         posts_query = posts_query.filter(
-            models.Post.title.contains(search)
-            | models.Post.content.contains(search)
+            models.Post.title.ilike(f"%{search}%")
+            | models.Post.content.ilike(f"%{search}%")
         )
     posts_query = (
         posts_query.order_by(models.Post.created_at).limit(limit).offset(offset)
     )
+    print(posts_query)
     posts = posts_query.all()
     return posts
 
