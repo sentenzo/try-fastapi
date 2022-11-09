@@ -2,6 +2,7 @@ from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Query, Session
+from sqlalchemy.sql.expression import or_
 
 from .. import exceptions, models, oauth2, schemas
 from ..database import get_db
@@ -22,8 +23,20 @@ class Exception404NoId(exceptions.Exception404NoId):
 async def get_posts(
     db: Session = Depends(get_db),
     user: models.User = Depends(oauth2.get_current_user),
+    limit: int = 10,
+    offset: int = 0,
+    search: str | None = None,
 ):
-    posts = db.query(models.Post).all()
+    posts_query = db.query(models.Post)
+    if search:
+        posts_query = posts_query.filter(
+            models.Post.title.contains(search)
+            | models.Post.content.contains(search)
+        )
+    posts_query = (
+        posts_query.order_by(models.Post.created_at).limit(limit).offset(offset)
+    )
+    posts = posts_query.all()
     return posts
 
 
