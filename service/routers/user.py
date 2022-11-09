@@ -2,7 +2,7 @@ from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.exc import IntegrityError
-from sqlalchemy.orm import Query, Session
+from sqlalchemy.orm import Session
 
 from .. import models, pwd_context, schemas
 from ..database import get_db
@@ -20,13 +20,13 @@ def create_user(
     new_user: schemas.UserCreate,
     db: Session = Depends(get_db),
 ):
-
     new_user.password = pwd_context.hash(new_user.password)
     new_db_user = models.User(**new_user.dict())
     db.add(new_db_user)
     try:
         db.commit()
     except IntegrityError as err:
+
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=str(err),

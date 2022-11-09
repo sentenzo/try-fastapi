@@ -13,6 +13,7 @@ class Post(BaseModel):
 class PostWithID(BaseModel):
     id: UUID
     created_at: datetime
+    owner_id: UUID
 
 
 class PostCreate(Post):

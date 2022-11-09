@@ -1,4 +1,6 @@
-from sqlalchemy import Boolean, Column, String
+# from __future__ import annotations
+
+from sqlalchemy import Boolean, Column, ForeignKey, String
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.sql.expression import text
 from sqlalchemy.sql.sqltypes import TIMESTAMP
@@ -23,6 +25,14 @@ class EntityBase(Base):
 class Post(EntityBase):
     __tablename__ = "post"
 
+    owner_id = Column(
+        UUID(as_uuid=True),
+        ForeignKey(
+            "user.id",
+            ondelete="CASCADE",
+        ),
+        nullable=False,
+    )
     title = Column(String, nullable=False)
     content = Column(String, nullable=False)
     published = Column(
