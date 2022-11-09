@@ -40,7 +40,7 @@ def verify_access_token(token: str, credentials_exception):
                 detail="The token is expired",
                 headers={"WWW-Authenticate": "Bearer"},
             )
-        token_data = schemas.TokenData(id=user_id)
+        token_data = schemas.misc.TokenData(id=user_id)
         return token_data
     except JWTError as err:
         raise credentials_exception from err
@@ -55,7 +55,7 @@ def get_current_user(
         headers={"WWW-Authenticate": "Bearer"},
     )
 
-    token_data: schemas.TokenData = verify_access_token(
+    token_data: schemas.misc.TokenData = verify_access_token(
         token, credentials_exception
     )
     user = db.query(models.User).get(token_data.id)

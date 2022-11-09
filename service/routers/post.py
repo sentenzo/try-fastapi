@@ -17,7 +17,7 @@ class Exception404NoId(exceptions.Exception404NoId):
 
 @router.get(
     "/all",
-    response_model=list[schemas.PostResponse],
+    response_model=list[schemas.post.PostResponseWithOwner],
 )
 async def get_posts(
     db: Session = Depends(get_db),
@@ -29,7 +29,7 @@ async def get_posts(
 
 @router.get(
     "/{post_uuid}",
-    response_model=schemas.PostResponse,
+    response_model=schemas.post.PostResponse,
 )
 async def get_post(
     post_uuid: UUID,
@@ -45,10 +45,10 @@ async def get_post(
 @router.post(
     "/",
     status_code=status.HTTP_201_CREATED,
-    response_model=schemas.PostResponse,
+    response_model=schemas.post.PostResponse,
 )
 async def create_post(
-    new_post: schemas.PostCreate,
+    new_post: schemas.post.PostCreate,
     db: Session = Depends(get_db),
     user: models.User = Depends(oauth2.get_current_user),
 ):
@@ -81,11 +81,11 @@ async def delete_post(
 
 @router.put(
     "/{post_uuid}",
-    response_model=schemas.PostResponse,
+    response_model=schemas.post.PostResponse,
 )
 async def update_post(
     post_uuid: UUID,
-    updated_post: schemas.PostCreate,
+    updated_post: schemas.post.PostCreate,
     db: Session = Depends(get_db),
     user: models.User = Depends(oauth2.get_current_user),
 ):

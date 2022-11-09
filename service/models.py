@@ -2,6 +2,7 @@
 
 from sqlalchemy import Boolean, Column, ForeignKey, String
 from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.orm import relationship
 from sqlalchemy.sql.expression import text
 from sqlalchemy.sql.sqltypes import TIMESTAMP
 
@@ -38,6 +39,7 @@ class Post(EntityBase):
     published = Column(
         Boolean, nullable=False, default=True, server_default="TRUE"
     )
+    owner = relationship("User")
 
 
 class User(EntityBase):

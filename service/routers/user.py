@@ -14,10 +14,10 @@ router = APIRouter(prefix="/user", tags=["User"])
 @router.post(
     "/",
     status_code=status.HTTP_201_CREATED,
-    response_model=schemas.UserResponse,
+    response_model=schemas.user.UserResponse,
 )
 def create_user(
-    new_user: schemas.UserCreate,
+    new_user: schemas.user.UserCreate,
     db: Session = Depends(get_db),
 ):
     new_user.password = pwd_context.hash(new_user.password)
@@ -38,7 +38,7 @@ def create_user(
 @router.get(
     "/all",
     status_code=status.HTTP_200_OK,
-    response_model=list[schemas.UserResponse],
+    response_model=list[schemas.user.UserResponse],
 )
 def get_all_users(
     db: Session = Depends(get_db),
@@ -49,7 +49,7 @@ def get_all_users(
 @router.get(
     "/{user_id}",
     status_code=status.HTTP_200_OK,
-    response_model=schemas.UserResponse,
+    response_model=schemas.user.UserResponse,
 )
 def get_user(
     user_id: UUID,

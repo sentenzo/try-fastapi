@@ -1,7 +1,9 @@
 from datetime import datetime
 from uuid import UUID
 
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel
+
+from . import user
 
 
 class Post(BaseModel):
@@ -25,28 +27,8 @@ class PostResponse(Post, PostWithID):
         orm_mode = True
 
 
-class UserCreate(BaseModel):
-    email: EmailStr
-    password: str
-
-
-class UserResponse(BaseModel):
-    id: UUID
-    email: EmailStr
+class PostResponseWithOwner(PostResponse):
+    owner: user.UserResponse
 
     class Config:
         orm_mode = True
-
-
-class Login(BaseModel):
-    email: EmailStr
-    password: str
-
-
-class Token(BaseModel):
-    token: str
-    token_type: str
-
-
-class TokenData(BaseModel):
-    id: UUID | None
