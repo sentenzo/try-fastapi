@@ -47,3 +47,19 @@ class User(EntityBase):
 
     email = Column(String, nullable=False, unique=True)
     password = Column(String, nullable=False)
+
+
+class Vote(Base):
+    __tablename__ = "vote"
+    user_id = Column(
+        UUID(as_uuid=True),
+        ForeignKey("user.id", ondelete="CASCADE"),
+        primary_key=True,
+        nullable=False,
+    )
+    post_id = Column(
+        UUID(as_uuid=True),
+        ForeignKey("post.id", ondelete="CASCADE"),
+        primary_key=True,
+        nullable=False,
+    )
