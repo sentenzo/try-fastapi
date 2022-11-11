@@ -12,6 +12,7 @@ psycopg2-binary = "^2.9.5"
 SQLAlchemy = "^1.4.43"
 passlib = {extras = ["bcrypt"], version = "^1.7.4"}
 python-jose = {extras = ["cryptography"], version = "^3.3.0"}
+alembic = "^1.8.1"
 
 [tool.poetry.group.dev.dependencies]
 black = "^22.8.0"
