@@ -32,3 +32,7 @@ class PostResponseWithOwner(PostResponse):
 
     class Config:
         orm_mode = True
+
+
+class PostResponseVotes(PostResponseWithOwner):
+    votes: int

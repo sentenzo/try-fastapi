@@ -1,6 +1,7 @@
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, status
+from sqlalchemy import func
 from sqlalchemy.orm import Query, Session
 from sqlalchemy.sql.expression import or_
 
@@ -16,9 +17,19 @@ class Exception404NoId(exceptions.Exception404NoId):
         super().__init__("post", uuid)
 
 
+def flatten_aggregation_funcs(
+    row: tuple[models.Post, int]
+) -> schemas.post.PostResponseVotes:
+    post, votes_count = row
+    sch_post = schemas.post.PostResponseWithOwner.from_orm(post)
+    flat = sch_post.dict()
+    flat["votes"] = votes_count
+    return flat
+
+
 @router.get(
     "/all",
-    response_model=list[schemas.post.PostResponseWithOwner],
+    response_model=list[schemas.post.PostResponseVotes],
 )
 async def get_posts(
     db: Session = Depends(get_db),
@@ -27,32 +38,47 @@ async def get_posts(
     offset: int = 0,
     search: str | None = None,
 ):
-    posts_query = db.query(models.Post)
+    posts_query = db.query(
+        models.Post, func.count(models.Vote.user_id).label("votes")
+    ).join(models.Vote, isouter=True)
     if search:
         posts_query = posts_query.filter(
             models.Post.title.ilike(f"%{search}%")
             | models.Post.content.ilike(f"%{search}%")
         )
     posts_query = (
-        posts_query.order_by(models.Post.created_at).limit(limit).offset(offset)
+        posts_query.group_by(models.Post.id)
+        .order_by(models.Post.created_at)
+        .limit(limit)
+        .offset(offset)
     )
+
+    print(posts_query)
     posts = posts_query.all()
-    return posts
+    print(posts[0])
+
+    return [flatten_aggregation_funcs(post) for post in posts]
 
 
 @router.get(
     "/{post_uuid}",
-    response_model=schemas.post.PostResponse,
+    response_model=schemas.post.PostResponseVotes,
 )
 async def get_post(
     post_uuid: UUID,
     db: Session = Depends(get_db),
     user: models.User = Depends(oauth2.get_current_user),
 ):
-    post = db.query(models.Post).get(post_uuid)
+    post_query = (
+        db.query(models.Post, func.count(models.Vote.user_id).label("votes"))
+        .join(models.Vote, isouter=True)
+        .filter(models.Post.id == post_uuid)
+        .group_by(models.Post.id)
+    )
+    post = post_query.first()
     if not post:
         raise Exception404NoId(post_uuid)
-    return post
+    return flatten_aggregation_funcs(post)
 
 
 @router.post(
