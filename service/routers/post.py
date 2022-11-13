@@ -53,9 +53,7 @@ async def get_posts(
         .offset(offset)
     )
 
-    print(posts_query)
     posts = posts_query.all()
-    print(posts[0])
 
     return [flatten_aggregation_funcs(post) for post in posts]
 
