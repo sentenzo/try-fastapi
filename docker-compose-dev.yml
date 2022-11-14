@@ -9,6 +9,9 @@ services:
       - JWT_KEY=${JWT_KEY}
       - JWT_ALGORITHM=${JWT_ALGORITHM}
       - JWT_TOKEN_LIFESPAN_MINUTES=${JWT_TOKEN_LIFESPAN_MINUTES}
+    volumes:
+      - ./service:/usr/src/app/service:ro
+    command: uvicorn service.__main__:app --host 0.0.0.0 --port 8000 --reload
 
   db:
     image: postgres:15.1

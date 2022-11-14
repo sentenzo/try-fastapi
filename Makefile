@@ -8,10 +8,10 @@ lint:
 
 docker-up:
 	poetry export --without-hashes -f requirements.txt --output service/requirements.txt
-	docker-compose up --build -d
+	docker-compose -f docker-compose-dev.yml up --build -d
 
 docker-down:
-	docker-compose down
+	docker-compose -f docker-compose-dev.yml down
 
 migrate:
 	poetry run alembic upgrade head

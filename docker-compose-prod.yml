@@ -1,0 +1,20 @@
+version: "3.8"
+services:
+  api:
+    image: ${DOCKER_IMAGE_NAME}
+    ports:
+      - 8888:8000
+    environment:
+      - DATABASE_URL=postgresql+psycopg2://postgres:${DATABASE_PASS}@db:5432/${DATABASE_NAME}
+      - JWT_KEY=${JWT_KEY}
+      - JWT_ALGORITHM=${JWT_ALGORITHM}
+      - JWT_TOKEN_LIFESPAN_MINUTES=${JWT_TOKEN_LIFESPAN_MINUTES}
+
+  db:
+    image: postgres:15.1
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: ${DATABASE_PASS}
+      POSTGRES_DB: ${DATABASE_NAME}
+    volumes:
+      - .data:/var/lib/postgresql/data
