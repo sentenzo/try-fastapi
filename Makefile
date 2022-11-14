@@ -2,8 +2,8 @@ run:
 	poetry run uvicorn service.__main__:app --host 0.0.0.0 --port 8000
 
 lint:
-	poetry run isort service
-	poetry run black service
+	poetry run isort service tests
+	poetry run black service tests
 	poetry run pylint service
 
 docker-up:
@@ -15,3 +15,8 @@ docker-down:
 
 migrate:
 	poetry run alembic upgrade head
+
+test:
+	poetry run pytest --verbose --capture=no --exitfirst
+#   poetry run pytest -v -s -x
+#   poetry run pytest -vsx

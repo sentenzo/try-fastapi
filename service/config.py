@@ -16,6 +16,7 @@ class JwtSettings(BaseSettings):
 
 class Config(BaseSettings):
     database_url: PostgresDsn
+    test_database_url: PostgresDsn
     jwt_settings: JwtSettings = JwtSettings()
 
     class Config:

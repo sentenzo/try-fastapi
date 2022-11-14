@@ -12,7 +12,7 @@ router = APIRouter(prefix="/user", tags=["User"])
 
 
 @router.post(
-    "/",
+    "",
     status_code=status.HTTP_201_CREATED,
     response_model=schemas.user.UserResponse,
 )
