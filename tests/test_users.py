@@ -1,8 +1,12 @@
+from uuid import UUID
+
 import pytest
 from fastapi import status
-from uuid import UUID
+
+from service import oauth2
+from service.schemas.misc import Token, TokenData
 from service.schemas.user import UserResponse
-from service.schemas.misc import Token
+
 
 TEST_USERS = [
     {"email": "test000@test.com", "password": "hack me"},
@@ -54,5 +58,8 @@ def test_login_user(client, test_users: list[tuple[UserResponse, dict]]):
             },
         )
         assert result.status_code == status.HTTP_200_OK
+
         auth_result = Token(**result.json())
-        print(auth_result)
+        assert auth_result.token_type == "bearer"
+        token_data: TokenData = oauth2.verify_access_token(auth_result.token)
+        assert token_data.id == user.id

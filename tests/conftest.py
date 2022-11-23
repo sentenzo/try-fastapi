@@ -5,7 +5,7 @@ from sqlalchemy.orm import sessionmaker
 
 from service.__main__ import make_app
 from service.config import get_config
-from service.database import get_db, Base
+from service.database import Base, get_db
 
 
 engine = create_engine(get_config().test_database_url)
