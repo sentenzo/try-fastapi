@@ -1,5 +1,5 @@
 run:
-	poetry run uvicorn service.__main__:app --host 0.0.0.0 --port 8000
+	poetry run uvicorn service.__main__:app --host 0.0.0.0 --port 8000 --reload
 
 lint:
 	poetry run isort service tests

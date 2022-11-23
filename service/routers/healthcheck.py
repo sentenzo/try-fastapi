@@ -18,7 +18,7 @@ def ping_app():
 @router.get("/ping_db", status_code=status.HTTP_200_OK)
 def ping_db(db: Session = Depends(get_db)):
     try:
-        db.scalar(select(text("NOW()")))
+        db.scalar(select(text("NOW()")))  # SELECT NOW()
         return {"message": "the db is reachable"}
     except (Psycopg2Error, SQLAlchemyError) as ex:
         raise HTTPException(
