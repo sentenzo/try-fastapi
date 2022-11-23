@@ -13,7 +13,7 @@ engine = create_engine(get_config().test_database_url)
 TestSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 
-@pytest.fixture(scope="class")
+@pytest.fixture
 def session():
     # from alembic import command
 
