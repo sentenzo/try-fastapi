@@ -7,25 +7,7 @@ from service import oauth2
 from service.schemas.misc import Token, TokenData
 from service.schemas.user import UserResponse
 
-
-TEST_USERS = [
-    {"email": "test000@test.com", "password": "hack me"},
-    {"email": "test001@test.com", "password": "hack me"},
-    # {"email": "test002@test.com", "password": "hack me"},
-    # {"email": "test003@test.com", "password": "hack me"},
-]
-
-
-@pytest.fixture
-def test_users(client) -> list[tuple[UserResponse, dict]]:
-    users = []
-    for user_dict in TEST_USERS:
-        result = client.post("/user", json=user_dict)
-        assert result.status_code == status.HTTP_201_CREATED
-        new_user = UserResponse(**result.json())
-        assert new_user.email == user_dict["email"]
-        users.append((new_user, user_dict))
-    return users
+from .conftest import TEST_USERS
 
 
 def test_get_user(client, test_users: list[tuple[UserResponse, dict]]):
