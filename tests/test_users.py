@@ -63,3 +63,42 @@ def test_login_user(client, test_users: list[tuple[UserResponse, dict]]):
         assert auth_result.token_type == "bearer"
         token_data: TokenData = oauth2.verify_access_token(auth_result.token)
         assert token_data.id == user.id
+
+
+@pytest.mark.parametrize(
+    "email, password, status_code",
+    [
+        (
+            TEST_USERS[0]["email"],
+            TEST_USERS[0]["password"] + "*",
+            status.HTTP_401_UNAUTHORIZED,
+        ),
+        (
+            TEST_USERS[0]["email"] + "x",
+            TEST_USERS[0]["password"],
+            status.HTTP_401_UNAUTHORIZED,
+        ),
+        (
+            TEST_USERS[0]["email"] + "x",
+            TEST_USERS[0]["password"] + "*",
+            status.HTTP_401_UNAUTHORIZED,
+        ),
+        ("", TEST_USERS[0]["password"], status.HTTP_422_UNPROCESSABLE_ENTITY),
+        (TEST_USERS[0]["email"], "", status.HTTP_422_UNPROCESSABLE_ENTITY),
+    ],
+)
+def test_login_user_fail(
+    client,
+    test_users: list[tuple[UserResponse, dict]],
+    email,
+    password,
+    status_code,
+):
+    result = client.post(
+        "/auth/login",
+        data={
+            "username": email,
+            "password": password,
+        },
+    )
+    assert result.status_code == status_code
