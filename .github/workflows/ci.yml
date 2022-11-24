@@ -24,6 +24,8 @@ jobs:
         run: poetry install
       - name: pylint
         run: poetry run pylint service 
+      - name: creating .env file
+        run: cp .example.env .env
       - name: launch db
         run: docker-compose -f docker-compose-dev.yml up db
       - name: pytest
