@@ -22,3 +22,9 @@ jobs:
         run: pip install poetry
       - name: install dependencies
         run: poetry install
+      - name: pylint
+        run: poetry run pylint service 
+      - name: launch db
+        run: docker-compose -f docker-compose-dev.yml up db
+      - name: pytest
+        run: poetry run pytest --verbose --capture=no --exitfirst
