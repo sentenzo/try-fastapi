@@ -27,6 +27,6 @@ jobs:
       - name: creating .env file
         run: cp .example.env .env
       - name: launch db
-        run: docker-compose -f docker-compose-dev.yml up db -d
+        run: docker-compose -f docker-compose-dev.yml up -d db
       - name: pytest
         run: poetry run pytest --verbose --capture=no --exitfirst
